@@ -24,6 +24,9 @@ def detect_blue_color():
         print("Error: Could not open webcam.")
         exit()
 
+    # Give the camera some time to focus
+    time.sleep(5)  # Sleep for 2 seconds to let the camera focus
+
     # Create a window
     cv2.namedWindow("test")
 
@@ -36,28 +39,28 @@ def detect_blue_color():
         # Convert the frame to HSV
         hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        # Define color range for red (lower and upper bound to account for both red regions in HSV)
+        # Define color range for blue (lower and upper bound to account for both blue regions in HSV)
         lower_blue1 = np.array([90, 50, 50])
         upper_blue1 = np.array([120, 255, 255])
         lower_blue2 = np.array([120, 50, 50])
         upper_blue2 = np.array([150, 255, 255])
 
-        # Create masks for both red ranges
+        # Create masks for both blue ranges
         mask1 = cv2.inRange(hsv_frame, lower_blue1, upper_blue1)
         mask2 = cv2.inRange(hsv_frame, lower_blue2, upper_blue2)
 
         # Combine both masks
         mask = cv2.bitwise_or(mask1, mask2)
 
-        # Find contours of the red color areas
+        # Find contours of the blue color areas
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         blue_detected = False
 
-        # Check if red color is detected
+        # Check if blue color is detected
         for contour in contours:
             if cv2.contourArea(contour) > 500:  # Only consider large enough areas (to avoid noise)
-                red_detected = True
+                blue_detected = True
                 break
 
         # Display the result
@@ -78,7 +81,7 @@ def detect_blue_color():
 
 
 def main(robot, gripper):
-    blue_detected = detect_blue_color()  # Check if red color is detected
+    blue_detected = detect_blue_color()  # Check if blue color is detected
 
     if blue_detected:
         print("Blue color detected! Moving to position...")
